@@ -10,20 +10,20 @@ def getInterestOverTime(search_term_lst, topic_name, timeframe='2004-01-01 2023-
     Returns the global interest over time for a search term in Google
 
         Parameters:
-                search_term_lst (list): A list containing the string denoting the search term e.g., ["Yuri on Ice"]
-                topic_name (str): The specific topic related to the search term e.g., "Japanese animated series"
-                timeframe (str): Date to start from. Defaults to specific timeframe. 
+            search_term_lst (list): A list containing the string denoting the search term e.g., ["Yuri on Ice"]
+            topic_name (str): The specific topic related to the search term e.g., "Japanese animated series"
+            timeframe (str): Date to start from. Defaults to specific timeframe. 
                     Set to 'all' for everything
                     Specific dates, 'YYYY-MM-DD YYYY-MM-DD' example '2016-12-14 2017-01-25'
                     Specific datetimes, 'YYYY-MM-DDTHH YYYY-MM-DDTHH' example '2017-02-06T10 2017-02-12T07'
-                geo (str): Two letter country abbreviation, defaults to '' for world e.g., "US" for United States
-                gprop (str): What Google property to filter to, defaults to '' for web search 
-                                Can be 'images', 'news', 'youtube' or 'froogle' (for Google Shopping results)
+            geo (str): Two letter country abbreviation, defaults to '' for world e.g., "US" for United States
+            gprop (str): What Google property to filter to, defaults to '' for web search 
+                         Can be 'images', 'news', 'youtube' or 'froogle' (for Google Shopping results)
 
         Returns:
-                topic_id (str): The id of the topic_name e.g., '/g/11cmg5bxns' is the id for the search term
-                                "Yuri on Ice" where the topic_name is "Japanese animated series"
-                trend_df (dataframe): The dataframe containing the interest over time for the search_term and topic_id
+            topic_id (str): The id of the topic_name e.g., '/g/11cmg5bxns' is the id for the search term
+                            "Yuri on Ice" where the topic_name is "Japanese animated series"
+            trend_df (dataframe): The dataframe containing the interest over time for the search_term and topic_id
     '''
     # Connect to Google
     pytrend = TrendReq()
@@ -48,7 +48,7 @@ def getInterestOverTime(search_term_lst, topic_name, timeframe='2004-01-01 2023-
 
     return topic_id, trend_df
 
-def getMonthlyInterest(path, search_term_lst, topic_name):
+def getMonthlyInterest(path, search_term_lst, topic_name, refresh_data=False, timeframe='2004-01-01 2023-07-01'):
     '''
     Returns the monthly global interest over time for a search term in Google
 
@@ -58,15 +58,21 @@ def getMonthlyInterest(path, search_term_lst, topic_name):
                        and save it into the path specified.
         search_term_lst (list): A list containing the string denoting the search term e.g., ["Yuri on Ice"]
         topic_name (str): The specific topic related to the search term e.g., "Japanese animated series"
+        refresh_data (bool): Set to True to pull in new data from GoogleTrends API regardless 
+                             of whether data already exists.
+        timeframe (str): Date to start from. Defaults to specific timeframe. 
+            Set to 'all' for everything
+            Specific dates, 'YYYY-MM-DD YYYY-MM-DD' example '2016-12-14 2017-01-25'
+            Specific datetimes, 'YYYY-MM-DDTHH YYYY-MM-DDTHH' example '2017-02-06T10 2017-02-12T07'
     
     '''
-    if os.path.isfile(path):
+    if os.path.isfile(path) and not refresh_data:
         print("Taking existing file ", path)
         yuri_world_df = pd.DataFrame()
         yuri_world_df = pd.read_pickle(path)
     else:
         print("Getting interest over time for Yuri on Ice...")
-        yuri_topic_id, yuri_world_df = getInterestOverTime(search_term_lst, topic_name)
+        yuri_topic_id, yuri_world_df = getInterestOverTime(search_term_lst, topic_name, timeframe)
         # Save to pickle file
         print("Saving data into ", path)
         yuri_world_df.to_pickle(path)

@@ -83,3 +83,51 @@ def getDates(years_lst):
                                             axis=1)
 
     return ym_df
+
+def getDateFeatures(trend_df):
+    '''
+    Returns the year and month features for an interest level dataframe.
+
+        Parameters:
+                trend_df (dataframe): A dataframe with the structure:
+                                      --------------------------------------
+                                      | date | interest_level | is_partial |
+                                      -------|----------------|-------------
+
+        Returns:
+                trend_df (dataframe): The original dataframe plus month and year features:
+                                      -----------------------------------------------------
+                                      | date | interest_level | is_partial | year | month |
+                                      -------|----------------|------------|------|--------
+    '''
+    # If the date feature columns do not already exist, then create the date feature columns
+    if 'year' not in trend_df.columns.tolist() and 'month' not in trend_df.columns.tolist():
+        trend_df['year'] = pd.DatetimeIndex(trend_df['date']).year
+        trend_df['month'] = pd.DatetimeIndex(trend_df['date']).month
+    return trend_df
+
+def getPastInterest(df, interest_col, hist_interest_col):
+    '''
+    Returns the interest_level for the same month in the previous year
+        Parameters:
+            df (dataframe): A dataframe with at least the columns "year", "month", "interest_level"
+            interest_col (str): The name of the column referring to the the interest level
+            hist_interest_col (str): The name of the column to be created
+
+        Returns:
+            join_df (dataframe): The original dataframe plus column hist_interest_col
+    '''
+    # Join the current year with data for the same month in the previous year
+    hist_df = pd.DataFrame()
+    hist_df['year_hist'] = df['year']
+    hist_df['month_match'] = df['month']
+    hist_df['year_match'] = df['year'] + 1
+    hist_df[hist_interest_col] = df[interest_col]
+    # Perform the join
+    join_df = pd.DataFrame()
+    join_df = pd.merge(df, hist_df, how='left',  left_on=['year', 'month'], right_on=['year_match', 'month_match'], indicator=True)
+
+    # Where you cannot find historical, just replace with current
+    join_df[hist_interest_col] = join_df[hist_interest_col].where(join_df['_merge']=="both", join_df[interest_col])
+    
+    return join_df
