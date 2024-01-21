@@ -1,6 +1,6 @@
 ## Did "Yuri on Ice" spark a national interest in ice skating?
 
-Examining the impact of the sports anime _Yuri on Ice_ on national interest levels on ice skating. The original run of the anime lasted from October 6, 2016 – December 21, 2016.
+Examining the impact of the sports anime _Yuri on Ice_ on national and global interest on ice skating. The original run of the anime lasted from October 6, 2016 – December 21, 2016.
 
 Includes:
 - An Event Study on the impact of _Yuri on Ice_ on ice skating interest
